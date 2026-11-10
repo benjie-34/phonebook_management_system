@@ -1,0 +1,19 @@
+{% extends "contacts/base.html" %}
+{% block title %}{{ contact.full_name }} | Phone Book{% endblock %}
+{% block content %}
+<div class="mb-4"><a class="text-decoration-none" href="{% url 'contact_list' %}">← Back to contacts</a></div>
+<div class="page-card p-4 p-md-5">
+  <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+    <div class="d-flex align-items-center gap-3"><div class="avatar" style="width:64px;height:64px;font-size:1.2rem">{{ contact.first_name|first|upper }}{{ contact.last_name|first|upper }}</div><div><h1 class="h2 fw-bold mb-1">{{ contact.full_name }}</h1><span class="muted small">Contact details</span></div></div>
+    <div class="d-flex gap-2"><a class="btn btn-outline-primary" href="{% url 'contact_update' contact.pk %}">Edit</a><a class="btn btn-outline-danger" href="{% url 'contact_delete' contact.pk %}">Delete</a></div>
+  </div>
+  <hr>
+  <div class="row g-4">
+    <div class="col-md-6"><div class="small muted mb-1">PHONE NUMBER</div><div class="fw-semibold"><a href="tel:{{ contact.phone_number }}" class="text-decoration-none">{{ contact.phone_number }}</a></div></div>
+    <div class="col-md-6"><div class="small muted mb-1">EMAIL ADDRESS</div><div class="fw-semibold">{% if contact.email %}<a href="mailto:{{ contact.email }}" class="text-decoration-none">{{ contact.email }}</a>{% else %}—{% endif %}</div></div>
+    <div class="col-md-6"><div class="small muted mb-1">ADDRESS</div><div>{{ contact.address|default:"—"|linebreaksbr }}</div></div>
+    <div class="col-md-6"><div class="small muted mb-1">NOTES</div><div>{{ contact.notes|default:"—"|linebreaksbr }}</div></div>
+  </div>
+  <hr><div class="small muted">Added {{ contact.created_at|date:"M d, Y · h:i A" }}{% if contact.updated_at != contact.created_at %} · Updated {{ contact.updated_at|date:"M d, Y · h:i A" }}{% endif %}</div>
+</div>
+{% endblock %}

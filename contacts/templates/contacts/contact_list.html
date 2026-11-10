@@ -1,0 +1,40 @@
+{% extends "contacts/base.html" %}
+{% block title %}My Contacts | Phone Book{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+  <div><p class="text-primary fw-semibold text-uppercase small mb-1">Your directory</p><h1 class="h2 fw-bold mb-1">My Contacts</h1><p class="muted mb-0">Keep all your important people in one place.</p></div>
+  <div class="text-end"><div class="h3 fw-bold mb-0">{{ total_contacts }}</div><div class="small muted">Total contacts</div></div>
+</div>
+<div class="page-card p-3 p-md-4">
+  <form method="get" class="row g-2 mb-4">
+    <div class="col"><input class="form-control form-control-lg" type="search" name="q" value="{{ query }}" placeholder="Search name, phone number, or email..."></div>
+    <div class="col-auto"><button class="btn btn-primary btn-lg" type="submit">Search</button></div>
+    {% if query %}<div class="col-auto"><a class="btn btn-outline-secondary btn-lg" href="{% url 'contact_list' %}">Clear</a></div>{% endif %}
+  </form>
+  {% if page_obj.object_list %}
+    <div class="table-responsive">
+      <table class="table align-middle">
+        <thead><tr class="text-secondary small"><th>CONTACT</th><th>PHONE NUMBER</th><th>EMAIL</th><th class="text-end">ACTIONS</th></tr></thead>
+        <tbody>
+        {% for contact in page_obj %}
+          <tr>
+            <td><div class="d-flex align-items-center gap-3"><div class="avatar">{{ contact.first_name|first|upper }}{{ contact.last_name|first|upper }}</div><div><a class="fw-semibold text-decoration-none text-dark" href="{% url 'contact_detail' contact.pk %}">{{ contact.full_name }}</a><div class="small muted">{{ contact.address|default:"No address provided"|truncatechars:45 }}</div></div></div></td>
+            <td>{{ contact.phone_number }}</td><td>{{ contact.email|default:"—" }}</td>
+            <td class="text-end text-nowrap"><a class="btn btn-sm btn-outline-primary" href="{% url 'contact_detail' contact.pk %}">View</a> <a class="btn btn-sm btn-outline-secondary" href="{% url 'contact_update' contact.pk %}">Edit</a></td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="d-flex justify-content-between align-items-center pt-2">
+      <span class="small muted">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+      <div class="btn-group">
+        {% if page_obj.has_previous %}<a class="btn btn-outline-secondary btn-sm" href="?q={{ query|urlencode }}&page={{ page_obj.previous_page_number }}">Previous</a>{% endif %}
+        {% if page_obj.has_next %}<a class="btn btn-outline-secondary btn-sm" href="?q={{ query|urlencode }}&page={{ page_obj.next_page_number }}">Next</a>{% endif %}
+      </div>
+    </div>
+  {% else %}
+    <div class="text-center py-5"><div class="display-5 mb-3">👥</div><h2 class="h5 fw-bold">{% if query %}No matching contacts{% else %}Your phone book is empty{% endif %}</h2><p class="muted">{% if query %}Try another name, number, or email address.{% else %}Add your first contact to get started.{% endif %}</p><a class="btn btn-primary" href="{% url 'contact_create' %}">+ Add your first contact</a></div>
+  {% endif %}
+</div>
+{% endblock %}
